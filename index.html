@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Au bout du lien</title>
+<meta name="description" content="Décortiquer une adresse web pour voir à qui elle mène vraiment.">
+<meta name="theme-color" content="#F4F5F6">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Au bout du lien">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Atkinson+Hyperlegible:wght@400;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F4F5F6;
+  --ink:#22262A;
+  --muted:#656A6F;
+  --line:#DADDE0;
+  --tint:#EAECEE;
+  --strong:#F2E3D9;
+  --shade:#EAECEE;
+  --accent:#8A4B2A;
+  --accent-line:#C08760;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{max-width:100%;overflow-x:hidden}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:'Atkinson Hyperlegible',system-ui,-apple-system,sans-serif;
+  font-size:17px;
+  line-height:1.55;
+  padding:24px 18px 64px;
+  -webkit-text-size-adjust:100%;
+}
+.page{max-width:720px;margin:0 auto}
+
+header{margin-bottom:32px}
+h1{
+  font-family:'Fraunces',Georgia,serif;
+  font-weight:600;
+  font-size:2rem;
+  letter-spacing:-.01em;
+  line-height:1.15;
+}
+.baseline{color:var(--muted);margin-top:6px;max-width:52ch}
+
+/* ---- saisie ---- */
+.field{position:relative;margin-bottom:14px}
+textarea{
+  width:100%;
+  min-height:5.2em;
+  padding:16px;
+  background:var(--shade);
+  color:var(--ink);
+  border:1px solid var(--line);
+  border-radius:10px;
+  font-family:'DM Mono',ui-monospace,monospace;
+  font-size:15px;
+  line-height:1.5;
+  resize:vertical;
+  word-break:break-all;
+}
+textarea:focus{outline:2px solid var(--ink);outline-offset:2px}
+textarea::placeholder{color:var(--muted);font-family:'Atkinson Hyperlegible',sans-serif}
+
+.notice{
+  font-size:14px;color:var(--muted);
+  margin:-4px 0 14px;
+}
+.examples{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:36px}
+.examples span{font-size:14px;color:var(--muted);align-self:center;margin-right:2px}
+.chip{
+  font-family:'DM Mono',monospace;
+  font-size:13px;
+  padding:5px 10px;
+  background:transparent;
+  color:var(--ink);
+  border:1px solid var(--line);
+  border-radius:999px;
+  cursor:pointer;
+}
+.chip:hover{background:var(--tint)}
+.chip:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+
+/* ---- destination ---- */
+.destination{
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:34px 22px;
+  text-align:center;
+  margin-bottom:34px;
+  box-shadow:inset 0 0 0 6px var(--paper),inset 0 0 0 7px var(--line);
+}
+.destination .lead{color:var(--muted);font-size:15px}
+.destination .host{
+  font-family:'Fraunces',Georgia,serif;
+  color:var(--accent);
+  font-weight:600;
+  font-size:clamp(1.7rem,7.5vw,2.7rem);
+  line-height:1.15;
+  margin:12px 0;
+  word-break:break-all;
+  letter-spacing:-.015em;
+}
+.destination .ask{font-size:17px}
+.destination .caveat{color:var(--muted);font-size:14px;margin-top:14px;max-width:44ch;margin-inline:auto}
+.destination.empty .host{color:var(--muted) !important;font-family:'Atkinson Hyperlegible',sans-serif;font-size:1.1rem;font-weight:400}
+
+/* ---- décorticage ---- */
+h2{
+  font-family:'Fraunces',Georgia,serif;
+  font-weight:600;
+  font-size:1.15rem;
+  margin-bottom:4px;
+}
+.hint{color:var(--muted);font-size:14px;margin-bottom:14px}
+.strip{
+  display:flex;flex-wrap:wrap;gap:4px;
+  font-family:'DM Mono',monospace;
+  font-size:15px;
+  margin-bottom:12px;
+}
+.seg{
+  padding:8px 9px;
+  border:1px solid var(--line);
+  border-radius:7px;
+  background:var(--tint);
+  color:var(--ink);
+  cursor:pointer;
+  text-align:left;
+  word-break:break-all;
+  border-bottom:2px dotted var(--muted);
+  font-family:inherit;font-size:inherit;
+}
+.seg:hover{background:var(--line)}
+.seg:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.seg.key{background:var(--strong);color:var(--accent);font-weight:500;border-color:var(--accent-line)}
+.seg[aria-expanded="true"]{border-bottom:2px solid var(--ink)}
+.panel{
+  border-left:3px solid var(--muted);
+  padding:12px 0 12px 14px;
+  margin-bottom:34px;
+  max-width:62ch;
+}
+.panel h3{font-size:16px;margin-bottom:4px}
+.panel p{font-size:15px}
+.panel .who{color:var(--muted);font-size:15px;margin-top:6px}
+.panel.idle{border-left-color:var(--line);color:var(--muted);font-size:15px}
+
+/* ---- observations ---- */
+.obs{list-style:none;margin-bottom:34px}
+.obs li{
+  border-top:1px solid var(--line);
+  padding:16px 0;
+  max-width:64ch;
+}
+.obs li:last-child{border-bottom:1px solid var(--line)}
+.obs h3{font-family:'Fraunces',serif;font-weight:600;font-size:1.02rem}
+.obs .found{font-family:'DM Mono',monospace;font-size:14px;color:var(--muted);margin:4px 0;word-break:break-all}
+.obs p{font-size:15px}
+.obs li.solo{background:var(--tint);border:1px solid var(--line);border-radius:10px;padding:20px;max-width:none}
+.obs li.solo:last-child{border-bottom:1px solid var(--line)}
+.none{color:var(--muted);font-size:15px;max-width:60ch;margin-bottom:34px}
+
+footer{
+  border-top:1px solid var(--line);
+  padding-top:18px;
+  color:var(--muted);
+  font-size:14px;
+  max-width:60ch;
+}
+footer p+p{margin-top:6px}
+[hidden]{display:none !important}
+@media (prefers-reduced-motion:no-preference){
+  .panel{transition:none}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<header>
+  <h1>Au bout du lien</h1>
+  <p class="baseline">Une adresse web dit toujours où elle mène. Encore faut-il savoir où regarder.</p>
+</header>
+
+<div class="field">
+  <label for="entree" class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Adresse à examiner</label>
+  <textarea id="entree" spellcheck="false" autocapitalize="off" autocorrect="off"
+    placeholder="Collez ici le lien reçu. Il ne sera ni ouvert ni envoyé nulle part."></textarea>
+</div>
+<p class="notice" id="notice" hidden></p>
+
+<div class="examples">
+  <span>Exemples :</span>
+  <button class="chip" type="button">https://www.bnpparibasfortis.be/connexion</button>
+  <button class="chip" type="button">https://paypal.com.securite-client.ru/login</button>
+  <button class="chip" type="button">https://azertida.github.io/coup-denvoi/</button>
+  <button class="chip" type="button">http://192.168.1.14/admin</button>
+  <button class="chip" type="button">https://bit.ly/3xK9mQ2</button>
+  <button class="chip" type="button">https://www.bbc.co.uk/news</button>
+  <button class="chip" type="button">https://аpple.com/verify-id</button>
+  <button class="chip" type="button">https://mabanque.be@serveur-3812.tk/</button>
+  <button class="chip" type="button">https://bpost-be-livraison.info/colis/48812</button>
+  <button class="chip" type="button">https://login.microsoftonline.com.session-verify-3821.xyz/</button>
+  <button class="chip" type="button">https://www.impots.gouv.fr/particulier</button>
+</div>
+
+<section class="destination empty" id="destination" aria-live="polite">
+  <p class="lead" id="destLead">Rien à examiner pour l'instant</p>
+  <p class="host" id="destHost">Collez une adresse ci-dessus.</p>
+</section>
+
+<section id="blocDecorticage" hidden>
+  <h2>L'adresse, morceau par morceau</h2>
+  <p class="hint">Touchez un morceau pour savoir ce qu'il est et qui l'écrit.</p>
+  <div class="strip" id="strip"></div>
+  <div class="panel idle" id="panel">Aucun morceau sélectionné.</div>
+</section>
+
+<section id="blocObs" hidden>
+  <h2>Ce qui a été remarqué</h2>
+  <p class="hint" id="obsHint">Des observations, pas un verdict.</p>
+  <ul class="obs" id="obs"></ul>
+</section>
+
+<footer>
+  <p>Cette application n'ouvre aucun lien, ne consulte aucun site et n'envoie rien. Tout se passe sur votre appareil, et rien n'est conservé.</p>
+  <p>Elle ne dira jamais qu'un lien est sûr. Une adresse impeccable peut mener à un faux site créé le matin même : seul le nom de domaine, et ce que vous savez de l'expéditeur, permettent de décider.</p>
+</footer>
+
+</div>
+
+<script>
+"use strict";
+
+/* ============================================================
+   1. Suffixes composés et extensions courantes
+   ============================================================ */
+const SUFFIXES = new Set([
+  // Royaume-Uni
+  "co.uk","org.uk","me.uk","net.uk","ltd.uk","plc.uk","ac.uk","gov.uk","sch.uk","nhs.uk","police.uk","mod.uk",
+  // France, Belgique
+  "gouv.fr","asso.fr","com.fr","tm.fr","avocat.fr","ac.be",
+  // Espagne, Portugal, Italie, Grèce
+  "com.es","org.es","nom.es","gob.es","edu.es","com.pt","gov.pt","gov.it","edu.it","com.gr","gov.gr",
+  // Pologne, Turquie, Ukraine, Russie
+  "com.pl","org.pl","net.pl","com.tr","gov.tr","com.ua","com.ru","org.ru","net.ru",
+  // Océanie
+  "com.au","net.au","org.au","edu.au","gov.au","co.nz","net.nz","org.nz","govt.nz","ac.nz",
+  // Amériques
+  "com.br","net.br","org.br","gov.br","com.ar","gob.ar","com.mx","gob.mx","com.co","com.pe",
+  "com.ve","com.uy","com.ec","com.do","com.py","com.bo","com.gt","com.sv","com.ni","com.pa","co.cr",
+  // Asie, Afrique, Moyen-Orient
+  "co.jp","ne.jp","or.jp","go.jp","ac.jp","com.cn","net.cn","org.cn","gov.cn","co.kr","or.kr",
+  "co.in","net.in","org.in","gov.in","co.id","com.sg","com.my","com.hk","co.il","org.il","gov.il","co.za",
+  // Hébergeurs qui donnent un sous-domaine à chacun
+  "github.io","gitlab.io","netlify.app","pages.dev","vercel.app","web.app","firebaseapp.com",
+  "herokuapp.com","onrender.com","fly.dev","glitch.me","repl.co","surge.sh","neocities.org",
+  "blogspot.com","wordpress.com","wixsite.com","weebly.com","squarespace.com","myshopify.com",
+  "tumblr.com","substack.com","notion.site","webflow.io","000webhostapp.com","duckdns.org",
+  "azurewebsites.net","sharepoint.com","canva.site"
+]);
+
+const TLD_COURANTS = new Set([
+  "com","org","net","info","biz","eu","be","fr","es","it","de","nl","lu","pt","uk","ie","ch","at",
+  "dk","se","no","fi","pl","cz","gr","hu","ro","bg","hr","si","sk","lt","lv","ee","is","mt","cy",
+  "us","ca","mx","br","ar","cl","co","pe","au","nz","jp","cn","kr","in","sg","hk","za","il","tr",
+  "ru","ua","gov","edu","int","mil","app","dev","io","ai","tech","site","online","store","shop",
+  "blog","cloud","page","link","xyz","bzh","brussels","paris","bank","insurance","pharmacy"
+]);
+
+/* ============================================================
+   2. Marques sensibles → leurs domaines officiels
+   ============================================================ */
+const MARQUES = [
+  {nom:"PayPal",       jetons:["paypal"],                     officiels:["paypal.com","paypal.be","paypal.fr","paypal.es"]},
+  {nom:"Payconiq",     jetons:["payconiq"],                   officiels:["payconiq.com","payconiq.be"]},
+  {nom:"itsme",        jetons:["itsme"],                      officiels:["itsme-id.com","itsme.be"]},
+  {nom:"bpost",        jetons:["bpost"],                      officiels:["bpost.be","bpostgroup.com"]},
+  {nom:"BNP Paribas Fortis", jetons:["bnpparibasfortis","bnpparibas","fortis"], officiels:["bnpparibasfortis.be","bnpparibas.com","bnpparibas.be"]},
+  {nom:"KBC",          jetons:["kbc"],                        officiels:["kbc.be","kbcbrussels.be"]},
+  {nom:"Belfius",      jetons:["belfius"],                    officiels:["belfius.be"]},
+  {nom:"ING",          jetons:["ingbank","ingdirect"],        officiels:["ing.be","ing.com","ing.es","ing.nl"]},
+  {nom:"Argenta",      jetons:["argenta"],                    officiels:["argenta.be"]},
+  {nom:"Crelan",       jetons:["crelan"],                     officiels:["crelan.be"]},
+  {nom:"Revolut",      jetons:["revolut"],                    officiels:["revolut.com"]},
+  {nom:"N26",          jetons:["n26"],                        officiels:["n26.com"]},
+  {nom:"Santander",    jetons:["santander","bancosantander"], officiels:["santander.com","bancosantander.es","santander.es"]},
+  {nom:"BBVA",         jetons:["bbva"],                       officiels:["bbva.es","bbva.com"]},
+  {nom:"CaixaBank",    jetons:["caixabank","lacaixa"],        officiels:["caixabank.es","caixabank.com"]},
+  {nom:"Microsoft",    jetons:["microsoft","microsoftonline","office365"], officiels:["microsoft.com","microsoftonline.com","office.com","live.com","outlook.com","msn.com"]},
+  {nom:"Apple",        jetons:["apple","icloud"],             officiels:["apple.com","icloud.com","me.com"]},
+  {nom:"Google",       jetons:["google","gmail"],             officiels:["google.com","google.be","google.fr","google.es","gmail.com","youtube.com","googleapis.com"]},
+  {nom:"Amazon",       jetons:["amazon"],                     officiels:["amazon.com","amazon.be","amazon.fr","amazon.es","amazon.de","amazon.co.uk","amazonaws.com"]},
+  {nom:"Netflix",      jetons:["netflix"],                    officiels:["netflix.com"]},
+  {nom:"Facebook",     jetons:["facebook"],                   officiels:["facebook.com","fb.com"]},
+  {nom:"Instagram",    jetons:["instagram"],                  officiels:["instagram.com"]},
+  {nom:"WhatsApp",     jetons:["whatsapp"],                   officiels:["whatsapp.com"]},
+  {nom:"LinkedIn",     jetons:["linkedin"],                   officiels:["linkedin.com","lnkd.in"]},
+  {nom:"Booking.com",  jetons:["booking"],                    officiels:["booking.com"]},
+  {nom:"Airbnb",       jetons:["airbnb"],                     officiels:["airbnb.com","airbnb.be","airbnb.fr","airbnb.es"]},
+  {nom:"Vinted",       jetons:["vinted"],                     officiels:["vinted.com","vinted.be","vinted.fr","vinted.es"]},
+  {nom:"DHL",          jetons:["dhl"],                        officiels:["dhl.com","dhl.be","dhl.fr","dhl.es"]},
+  {nom:"UPS",          jetons:["ups"],                        officiels:["ups.com"]},
+  {nom:"FedEx",        jetons:["fedex"],                      officiels:["fedex.com"]},
+  {nom:"La Poste",     jetons:["laposte","colissimo"],        officiels:["laposte.fr","laposte.net","colissimo.fr"]},
+  {nom:"Correos",      jetons:["correos"],                    officiels:["correos.es"]},
+  {nom:"SNCB",         jetons:["belgiantrain","sncb"],        officiels:["belgiantrain.be","sncb.be"]},
+  {nom:"STIB",         jetons:["stib"],                       officiels:["stib-mivb.be"]},
+  {nom:"Proximus",     jetons:["proximus"],                   officiels:["proximus.be","proximus.com"]},
+  {nom:"Telenet",      jetons:["telenet"],                    officiels:["telenet.be"]},
+  {nom:"Impôts (FR)",  jetons:["impots"],                     officiels:["impots.gouv.fr","dgfip.finances.gouv.fr"]},
+  {nom:"SPF Finances", jetons:["minfin","myminfin"],          officiels:["minfin.fgov.be","financien.belgium.be","fin.belgium.be"]},
+  {nom:"Agencia Tributaria", jetons:["agenciatributaria"],    officiels:["agenciatributaria.es","agenciatributaria.gob.es"]},
+  {nom:"Coinbase",     jetons:["coinbase"],                   officiels:["coinbase.com"]},
+  {nom:"Binance",      jetons:["binance"],                    officiels:["binance.com"]}
+];
+
+const RACCOURCISSEURS = new Set([
+  "bit.ly","tinyurl.com","t.co","goo.gl","ow.ly","is.gd","buff.ly","cutt.ly","rebrand.ly",
+  "shorturl.at","rb.gy","lnkd.in","t.me","tiny.cc","bl.ink","short.io","s.id","v.gd",
+  "urlz.fr","lc.cx","qrco.de","linktr.ee","urlr.me"
+]);
+
+const PORTS_USUELS = new Set(["80","443",""]);
+
+/* ============================================================
+   3. Extraction et découpage
+   ============================================================ */
+function extraire(texte){
+  // Ne nettoie que si le contenu ressemble à du texte collé (espaces, retours à la ligne)
+  if(!/\s/.test(texte.trim())) return {url:texte.trim(), nettoye:false};
+  const brut = texte.trim();
+  let m = brut.match(/[a-zA-Z][a-zA-Z0-9+.\-]*:\/\/[^\s"'<>]+/);
+  if(!m) m = brut.match(/[^\s"'<>\/]+\.[a-zA-Z]{2,}(?:[:\/?#][^\s"'<>]*)?/);
+  if(!m) return {url:brut, nettoye:false};
+  const url = m[0].replace(/[.,;:!?)\]}>»"']+$/,"");
+  return {url, nettoye:url !== brut};
+}
+
+function decouper(url){
+  let s = url;
+  const r = {protocole:null, identifiant:null, hote:"", port:null, chemin:"", requete:null, ancre:null};
+
+  const mp = s.match(/^([a-zA-Z][a-zA-Z0-9+.\-]*):\/\//);
+  if(mp){ r.protocole = mp[1].toLowerCase(); s = s.slice(mp[0].length); }
+
+  const ia = s.indexOf("#");
+  if(ia >= 0){ r.ancre = s.slice(ia+1); s = s.slice(0,ia); }
+  const iq = s.indexOf("?");
+  if(iq >= 0){ r.requete = s.slice(iq+1); s = s.slice(0,iq); }
+
+  const ic = s.search(/[\/\\]/);
+  let autorite;
+  if(ic >= 0){ autorite = s.slice(0,ic); r.chemin = s.slice(ic); }
+  else autorite = s;
+
+  const iat = autorite.lastIndexOf("@");
+  if(iat >= 0){ r.identifiant = autorite.slice(0,iat); autorite = autorite.slice(iat+1); }
+
+  const mport = autorite.match(/^(\[[^\]]*\]|[^:]*):(\d*)$/);
+  if(mport){ r.hote = mport[1]; r.port = mport[2]; }
+  else r.hote = autorite;
+
+  return r;
+}
+
+function estIP(h){
+  return /^\d{1,3}(\.\d{1,3}){3}$/.test(h) || /^\[[0-9a-fA-F:]+\]$/.test(h);
+}
+
+function domaineEnregistrable(hote){
+  const h = hote.toLowerCase().replace(/\.$/,"");
+  if(estIP(h)) return {sous:"", nom:h, ext:"", complet:h, ip:true, connu:true};
+  const l = h.split(".");
+  if(l.length < 2) return {sous:"", nom:h, ext:"", complet:h, ip:false, connu:false};
+
+  for(let n=3; n>=2; n--){
+    if(l.length > n){
+      const cand = l.slice(-n).join(".");
+      if(SUFFIXES.has(cand)){
+        return {
+          sous: l.slice(0, l.length-(n+1)).join("."),
+          nom:  l[l.length-(n+1)],
+          ext:  cand,
+          complet: l.slice(-(n+1)).join("."),
+          ip:false, connu:true
+        };
+      }
+    }
+  }
+  const ext = l[l.length-1];
+  return {
+    sous: l.slice(0, l.length-2).join("."),
+    nom:  l[l.length-2],
+    ext,
+    complet: l.slice(-2).join("."),
+    ip:false,
+    connu: TLD_COURANTS.has(ext)
+  };
+}
+
+/* ============================================================
+   4. Observations
+   ============================================================ */
+function limite(hote, jeton){
+  const h = hote.toLowerCase();
+  let i = h.indexOf(jeton);
+  while(i >= 0){
+    const avant = i === 0 ? "" : h[i-1];
+    const apres = h[i+jeton.length] || "";
+    if(!/[a-z0-9]/.test(avant) && !/[a-z0-9]/.test(apres)) return true;
+    i = h.indexOf(jeton, i+1);
+  }
+  return false;
+}
+
+function observer(p, d){
+  const obs = [];
+  const hote = p.hote.toLowerCase();
+
+  if(RACCOURCISSEURS.has(d.complet)){
+    return [{
+      solo:true,
+      titre:"Cette adresse ne dit rien de sa destination",
+      trouve:d.complet,
+      texte:"C'est un raccourcisseur : un service qui remplace une longue adresse par une courte. Le nom de domaine ci-dessus est celui du service, pas celui du site où vous arriverez. Il n'y a rien à examiner ici — le seul moyen de savoir est d'ouvrir le lien, ce qui est précisément ce qu'on cherche à éviter. Un service de dépliage d'URL peut afficher la destination sans vous y emmener."
+    }];
+  }
+
+  if(p.identifiant !== null){
+    obs.push({
+      titre:"Un arobase sépare l'adresse en deux",
+      trouve:p.identifiant + " @ " + p.hote,
+      texte:"Tout ce qui précède l'arobase est ignoré par le navigateur : c'est un emplacement prévu pour un identifiant. La destination réelle est ce qui suit. On peut donc écrire n'importe quel nom rassurant à gauche de l'arobase."
+    });
+  }
+
+  if(d.ip){
+    obs.push({
+      titre:"Un numéro à la place d'un nom",
+      trouve:p.hote,
+      texte:"L'adresse mène à une machine désignée par son numéro, sans nom de domaine. Les sites d'entreprises et d'administrations n'envoient jamais ce genre de lien : il n'y a rien à reconnaître, ni propriétaire à identifier."
+    });
+  }
+
+  if(!p.protocole){
+    obs.push({
+      titre:"Protocole non précisé",
+      trouve:"(rien avant le nom de domaine)",
+      texte:"L'adresse ne commence pas par https:// ni http://. Souvent c'est simplement une adresse recopiée en partie. Ce n'est pas un signe de fraude, mais il manque une information."
+    });
+  } else if(p.protocole === "http"){
+    obs.push({
+      titre:"Liaison non chiffrée",
+      trouve:"http://",
+      texte:"En http, ce qui est échangé circule en clair. Attention : le s de https ne dit rien de l'honnêteté du site, seulement que la liaison est chiffrée. Les faux sites utilisent https comme tout le monde."
+    });
+  }
+
+  if(/[^\x00-\x7F]/.test(p.hote)){
+    const cyr = /[\u0400-\u04FF]/.test(p.hote);
+    const grec = /[\u0370-\u03FF]/.test(p.hote);
+    const latin = /[a-zA-Z]/.test(p.hote);
+    obs.push({
+      titre: (cyr||grec) && latin ? "Deux alphabets mélangés dans le nom de domaine" : "Caractères non latins dans le nom de domaine",
+      trouve: [...p.hote].map(c => c.charCodeAt(0) > 127 ? c + " (U+" + c.charCodeAt(0).toString(16).toUpperCase().padStart(4,"0") + ")" : c).join(""),
+      texte:(cyr||grec) && latin
+        ? "Certaines lettres viennent d'un autre alphabet mais ressemblent trait pour trait à des lettres latines : le а cyrillique et le a latin sont indiscernables à l'œil. Le nom paraît familier alors qu'il désigne un domaine entièrement différent."
+        : "Le nom de domaine contient des caractères hors de l'alphabet latin de base. C'est parfois légitime (accents, autres langues), mais c'est aussi la technique employée pour imiter un nom connu."
+    });
+  }
+
+  if(/xn--/i.test(hote)){
+    obs.push({
+      titre:"Nom de domaine encodé",
+      trouve:hote,
+      texte:"La suite xn-- indique un nom qui contient des caractères spéciaux, réécrit sous une forme technique. Votre navigateur l'affichera autrement que ce que vous voyez ici."
+    });
+  }
+
+  if(/%/.test(p.hote)){
+    obs.push({
+      titre:"Caractères masqués dans le nom de domaine",
+      trouve:p.hote,
+      texte:"Le signe % introduit un caractère écrit sous forme de code. Dans un nom de domaine, cela ne sert normalement à rien, sinon à rendre le nom illisible."
+    });
+  }
+
+  if(!d.ip && d.sous){
+    const labels = d.sous.split(".");
+    const faux = labels.filter(x => TLD_COURANTS.has(x) || SUFFIXES.has(x));
+    if(faux.length){
+      obs.push({
+        titre:"Une fausse extension placée au milieu",
+        trouve:d.sous + " . " + d.complet,
+        texte:"Le morceau « " + faux[0] + " » ressemble à une fin d'adresse, mais il est situé avant le nom de domaine : c'est donc du décor. La lecture se fait de droite à gauche, et s'arrête à " + d.complet + "."
+      });
+    }
+    if(labels.length >= 3){
+      obs.push({
+        titre:"Beaucoup de niveaux empilés",
+        trouve:labels.join(" . ") + " . " + d.complet,
+        texte:"Le propriétaire du domaine ajoute autant de niveaux qu'il veut devant son nom, sans demander la permission à personne. Une longue file de mots rassurants avant le domaine ne coûte rien à fabriquer."
+      });
+    }
+  }
+
+  if(!d.ip){
+    for(const m of MARQUES){
+      if(m.officiels.includes(d.complet)) continue;
+      const jeton = m.jetons.find(j => limite(hote, j));
+      if(jeton){
+        obs.push({
+          titre:"Le nom « " + m.nom + " » apparaît, mais le domaine n'est pas le sien",
+          trouve:"trouvé : " + jeton + "   ·   domaine : " + d.complet,
+          texte:"Les adresses officielles de " + m.nom + " se terminent par " + m.officiels.slice(0,3).join(", ") + ". Ici, le nom est présent quelque part dans l'adresse, mais la destination appartient à " + d.complet + ". Placer une marque connue ailleurs que dans le domaine est la manœuvre la plus fréquente."
+        });
+        break;
+      }
+    }
+  }
+
+  if(!d.ip && /-/.test(d.nom) && d.nom.split("-").length >= 3){
+    obs.push({
+      titre:"Un nom de domaine composé de plusieurs mots",
+      trouve:d.nom,
+      texte:"Les organisations utilisent en général un nom court et stable. Un empilement de mots séparés par des tirets est fréquent chez les domaines créés pour une seule campagne."
+    });
+  }
+
+  if(!d.ip && /\d{3,}/.test(d.nom)){
+    obs.push({
+      titre:"Une longue suite de chiffres dans le nom de domaine",
+      trouve:d.nom,
+      texte:"Un numéro inséré dans le nom lui-même n'a pas de raison d'être pour un site établi. C'est courant sur les domaines fabriqués en série."
+    });
+  }
+
+  if(p.port !== null && !PORTS_USUELS.has(p.port)){
+    obs.push({
+      titre:"Un port inhabituel est précisé",
+      trouve:":" + p.port,
+      texte:"Le nombre après les deux-points désigne une porte d'entrée particulière sur le serveur. Les sites publics n'en précisent presque jamais."
+    });
+  }
+
+  if(!d.connu && !d.ip){
+    obs.push({
+      titre:"Extension peu courante",
+      trouve:"." + d.ext,
+      texte:"Cette terminaison ne fait pas partie des extensions les plus répandues. La lecture du domaine ci-dessus reste donc à confirmer : selon les pays, la vraie coupure peut se situer un cran plus à gauche."
+    });
+  }
+
+  return obs;
+}
+
+/* ============================================================
+   5. Affichage
+   ============================================================ */
+const $ = id => document.getElementById(id);
+const entree = $("entree"), notice = $("notice"), destination = $("destination");
+const destLead = $("destLead"), destHost = $("destHost");
+const blocDec = $("blocDecorticage"), strip = $("strip"), panel = $("panel");
+const blocObs = $("blocObs"), obsListe = $("obs"), obsHint = $("obsHint");
+
+function vider(){
+  destination.className = "destination empty";
+  destLead.textContent = "Rien à examiner pour l'instant";
+  destHost.textContent = "Collez une adresse ci-dessus.";
+  destination.querySelectorAll(".ask,.caveat").forEach(e => e.remove());
+  blocDec.hidden = true; blocObs.hidden = true; notice.hidden = true;
+}
+
+function analyser(){
+  const {url, nettoye} = extraire(entree.value);
+  if(!url){ vider(); return; }
+
+  notice.hidden = !nettoye;
+  if(nettoye) notice.textContent = "Adresse extraite du texte collé : " + url;
+
+  const p = decouper(url);
+  if(!p.hote){ vider(); return; }
+  const d = domaineEnregistrable(p.hote);
+
+  // --- destination ---
+  destination.className = "destination";
+  destination.querySelectorAll(".ask,.caveat").forEach(e => e.remove());
+  const raccourci = RACCOURCISSEURS.has(d.complet);
+  destLead.textContent = raccourci ? "Vous parlez d'abord à" : "Vous parlez à";
+  destHost.textContent = d.complet;
+
+  const ask = document.createElement("p");
+  ask.className = "ask";
+  ask.textContent = raccourci
+    ? "puis à un site inconnu, que cette adresse ne nomme pas."
+    : "Est-ce bien ce que vous attendiez ?";
+  destination.appendChild(ask);
+
+  if(!d.connu && !d.ip){
+    const c = document.createElement("p");
+    c.className = "caveat";
+    c.textContent = "Extension peu courante : la coupure entre le domaine et ce qui précède reste à confirmer.";
+    destination.appendChild(c);
+  }
+
+  // --- décorticage ---
+  const segs = [];
+  if(p.protocole) segs.push({t:p.protocole+"://", l:"protocole", h:"Le protocole", q:"Il indique la manière de dialoguer avec le serveur. https signifie que l'échange est chiffré — cela protège le transport, mais ne dit rien de l'honnêteté du site. N'importe qui peut obtenir un certificat https gratuitement, en quelques minutes.", w:"Écrit par celui qui envoie le lien."});
+  if(p.identifiant !== null) segs.push({t:p.identifiant+"@", l:"avant l'arobase", h:"La zone identifiant", q:"Emplacement prévu pour un nom d'utilisateur. Le navigateur passe par-dessus sans en tenir compte. Ce qui est écrit ici n'a aucun effet sur la destination.", w:"Écrit librement par celui qui fabrique l'adresse. Souvent utilisé pour y placer un nom rassurant."});
+  if(d.sous) segs.push({t:d.sous+".", l:"sous-domaines", h:"Les sous-domaines", q:"Les niveaux placés devant le nom de domaine. www en est un. On peut en ajouter autant qu'on veut, avec n'importe quels mots — y compris le nom d'une banque ou une fausse extension.", w:"Écrits par le propriétaire du domaine, sans autorisation à demander."});
+  segs.push({t:d.ip ? d.complet : d.nom, l:d.ip ? "adresse numérique" : "nom de domaine", key:true,
+    h:d.ip ? "L'adresse numérique" : "Le nom de domaine",
+    q:d.ip ? "Une machine désignée par son numéro, sans nom. Rien ne permet de savoir à qui elle appartient." : "Le seul morceau qui engage quelqu'un. Il a été acheté auprès d'un bureau d'enregistrement, il est unique au monde et personne d'autre ne peut l'utiliser.",
+    w:d.ip ? "Aucun propriétaire identifiable à la lecture." : "C'est lui, avec son extension, qui répond à la question : à qui je parle ?"});
+  if(!d.ip && d.ext) segs.push({t:"."+d.ext, l:"extension", key:true, h:"L'extension", q:"La terminaison du domaine. Elle fait partie du nom : paypal.com et paypal.ru sont deux domaines sans aucun rapport, appartenant à deux propriétaires différents.", w:"Attribuée par un registre. Certaines sont très contrôlées (.gouv.fr), la plupart s'achètent librement."});
+  if(p.port) segs.push({t:":"+p.port, l:"port", h:"Le port", q:"Le numéro de la porte d'entrée sur le serveur. 80 et 443 sont les portes habituelles du web et ne s'écrivent pas.", w:"Choisi par celui qui gère le serveur."});
+  if(p.chemin) segs.push({t:p.chemin, l:"chemin", h:"Le chemin", q:"L'emplacement de la page à l'intérieur du site. C'est du texte libre : on peut y écrire /banque/securite/officiel/ sans que cela signifie quoi que ce soit.", w:"Écrit entièrement par le propriétaire du domaine."});
+  if(p.requete !== null) segs.push({t:"?"+p.requete, l:"paramètres", h:"Les paramètres", q:"Des informations transmises à la page : un numéro de commande, une langue, un identifiant de campagne. Souvent, un code qui permet de savoir que c'est bien vous qui avez cliqué.", w:"Écrits par le propriétaire du domaine."});
+  if(p.ancre !== null) segs.push({t:"#"+p.ancre, l:"ancre", h:"L'ancre", q:"Un repère à l'intérieur de la page, pour arriver directement au bon endroit. Cette partie n'est même pas envoyée au serveur.", w:"Écrite par le propriétaire du domaine."});
+
+  strip.innerHTML = "";
+  segs.forEach((s,i) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "seg" + (s.key ? " key" : "");
+    b.textContent = s.t;
+    b.setAttribute("aria-expanded","false");
+    b.title = s.l;
+    b.addEventListener("click", () => {
+      strip.querySelectorAll(".seg").forEach(x => x.setAttribute("aria-expanded","false"));
+      b.setAttribute("aria-expanded","true");
+      panel.className = "panel";
+      panel.innerHTML = "";
+      const h = document.createElement("h3"); h.textContent = s.h;
+      const q = document.createElement("p"); q.textContent = s.q;
+      const w = document.createElement("p"); w.className = "who"; w.textContent = s.w;
+      panel.append(h,q,w);
+    });
+    strip.appendChild(b);
+  });
+  panel.className = "panel idle";
+  panel.textContent = "Aucun morceau sélectionné.";
+  blocDec.hidden = false;
+
+  // --- observations ---
+  const liste = observer(p, d);
+  obsListe.innerHTML = "";
+  if(liste.length){
+    obsHint.hidden = liste.length === 1 && liste[0].solo;
+    obsHint.textContent = "Des observations, pas un verdict.";
+    liste.forEach(o => {
+      const li = document.createElement("li");
+      if(o.solo) li.className = "solo";
+      const h = document.createElement("h3"); h.textContent = o.titre;
+      const f = document.createElement("p"); f.className = "found"; f.textContent = o.trouve;
+      const t = document.createElement("p"); t.textContent = o.texte;
+      li.append(h,f,t);
+      obsListe.appendChild(li);
+    });
+  } else {
+    obsHint.hidden = true;
+    const li = document.createElement("li");
+    li.className = "solo";
+    const h = document.createElement("h3"); h.textContent = "Rien de particulier dans la forme de cette adresse";
+    const t = document.createElement("p");
+    t.textContent = "Aucun des pièges de construction connus n'a été repéré. Cela ne veut pas dire que le site est honnête : un faux site correctement fabriqué ne laisse aucune trace dans l'adresse. La question reste entière, et c'est vous qui y répondez — attendiez-vous un message de " + d.complet + " ?";
+    li.append(h,t);
+    obsListe.appendChild(li);
+  }
+  blocObs.hidden = false;
+}
+
+entree.addEventListener("input", analyser);
+entree.addEventListener("paste", e => {
+  const texte = (e.clipboardData || window.clipboardData).getData("text");
+  if(!texte) return;
+  e.preventDefault();
+  entree.value = extraire(texte).url;
+  analyser();
+});
+document.querySelectorAll(".chip").forEach(c => {
+  c.addEventListener("click", () => {
+    entree.value = c.textContent;
+    analyser();
+    destination.scrollIntoView({behavior:"smooth", block:"nearest"});
+  });
+});
+
+if("serviceWorker" in navigator){
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("service-worker.js").catch(() => {});
+  });
+}
+</script>
+</body>
+</html>
