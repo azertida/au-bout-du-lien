@@ -221,7 +221,7 @@ footer p+p{margin-top:6px}
 </div>
 
 <div class="examples">
-  <span>Exemples :</span>
+  <span>Exemples :</span>
   <button class="chip" type="button">https://www.bnpparibasfortis.be/connexion</button>
   <button class="chip" type="button">https://paypal.com.securite-client.ru/login</button>
   <button class="chip" type="button">https://azertida.github.io/coup-denvoi/</button>
@@ -255,7 +255,7 @@ footer p+p{margin-top:6px}
 
 <footer>
   <p>Cette application n'ouvre aucun lien, ne consulte aucun site et n'envoie rien. Tout se passe sur votre appareil, et rien n'est conservé.</p>
-  <p>Elle ne dira jamais qu'un lien est sûr. Une adresse impeccable peut mener à un faux site créé le matin même : seul le nom de domaine, et ce que vous savez de l'expéditeur, permettent de décider.</p>
+  <p>Elle ne dira jamais qu'un lien est sûr. Une adresse impeccable peut mener à un faux site créé le matin même : seul le nom de domaine, et ce que vous savez de l'expéditeur, permettent de décider.</p>
 </footer>
 
 </div>
@@ -454,7 +454,7 @@ function observer(p, d){
       solo:true,
       titre:"Cette adresse ne dit rien de sa destination",
       trouve:d.complet,
-      texte:"C'est un raccourcisseur : un service qui remplace une longue adresse par une courte. Le nom de domaine ci-dessus est celui du service, pas celui du site où vous arriverez. Il n'y a rien à examiner ici — le seul moyen de savoir est d'ouvrir le lien, ce qui est précisément ce qu'on cherche à éviter. Un service de dépliage d'URL peut afficher la destination sans vous y emmener."
+      texte:"C'est un raccourcisseur : un service qui remplace une longue adresse par une courte. Le nom de domaine ci-dessus est celui du service, pas celui du site où vous arriverez. Il n'y a rien à examiner ici — le seul moyen de savoir est d'ouvrir le lien, ce qui est précisément ce qu'on cherche à éviter. Un service de dépliage d'URL peut afficher la destination sans vous y emmener."
     }];
   }
 
@@ -462,7 +462,7 @@ function observer(p, d){
     obs.push({
       titre:"Un arobase sépare l'adresse en deux",
       trouve:p.identifiant + " @ " + p.hote,
-      texte:"Tout ce qui précède l'arobase est ignoré par le navigateur : c'est un emplacement prévu pour un identifiant. La destination réelle est ce qui suit. On peut donc écrire n'importe quel nom rassurant à gauche de l'arobase."
+      texte:"Tout ce qui précède l'arobase est ignoré par le navigateur : c'est un emplacement prévu pour un identifiant. La destination réelle est ce qui suit. On peut donc écrire n'importe quel nom rassurant à gauche de l'arobase."
     });
   }
 
@@ -470,7 +470,7 @@ function observer(p, d){
     obs.push({
       titre:"Un numéro à la place d'un nom",
       trouve:p.hote,
-      texte:"L'adresse mène à une machine désignée par son numéro, sans nom de domaine. Les sites d'entreprises et d'administrations n'envoient jamais ce genre de lien : il n'y a rien à reconnaître, ni propriétaire à identifier."
+      texte:"L'adresse mène à une machine désignée par son numéro, sans nom de domaine. Les sites d'entreprises et d'administrations n'envoient jamais ce genre de lien : il n'y a rien à reconnaître, ni propriétaire à identifier."
     });
   }
 
@@ -484,7 +484,7 @@ function observer(p, d){
     obs.push({
       titre:"Liaison non chiffrée",
       trouve:"http://",
-      texte:"En http, ce qui est échangé circule en clair. Attention : le s de https ne dit rien de l'honnêteté du site, seulement que la liaison est chiffrée. Les faux sites utilisent https comme tout le monde."
+      texte:"En http, ce qui est échangé circule en clair. Attention : le s de https ne dit rien de l'honnêteté du site, seulement que la liaison est chiffrée. Les faux sites utilisent https comme tout le monde."
     });
   }
 
@@ -496,7 +496,7 @@ function observer(p, d){
       titre: (cyr||grec) && latin ? "Deux alphabets mélangés dans le nom de domaine" : "Caractères non latins dans le nom de domaine",
       trouve: [...p.hote].map(c => c.charCodeAt(0) > 127 ? c + " (U+" + c.charCodeAt(0).toString(16).toUpperCase().padStart(4,"0") + ")" : c).join(""),
       texte:(cyr||grec) && latin
-        ? "Certaines lettres viennent d'un autre alphabet mais ressemblent trait pour trait à des lettres latines : le а cyrillique et le a latin sont indiscernables à l'œil. Le nom paraît familier alors qu'il désigne un domaine entièrement différent."
+        ? "Certaines lettres viennent d'un autre alphabet mais ressemblent trait pour trait à des lettres latines : le а cyrillique et le a latin sont indiscernables à l'œil. Le nom paraît familier alors qu'il désigne un domaine entièrement différent."
         : "Le nom de domaine contient des caractères hors de l'alphabet latin de base. C'est parfois légitime (accents, autres langues), mais c'est aussi la technique employée pour imiter un nom connu."
     });
   }
@@ -524,7 +524,7 @@ function observer(p, d){
       obs.push({
         titre:"Une fausse extension placée au milieu",
         trouve:d.sous + " . " + d.complet,
-        texte:"Le morceau « " + faux[0] + " » ressemble à une fin d'adresse, mais il est situé avant le nom de domaine : c'est donc du décor. La lecture se fait de droite à gauche, et s'arrête à " + d.complet + "."
+        texte:"Le morceau « " + faux[0] + " » ressemble à une fin d'adresse, mais il est situé avant le nom de domaine : c'est donc du décor. La lecture se fait de droite à gauche, et s'arrête à " + d.complet + "."
       });
     }
     if(labels.length >= 3){
@@ -542,8 +542,8 @@ function observer(p, d){
       const jeton = m.jetons.find(j => limite(hote, j));
       if(jeton){
         obs.push({
-          titre:"Le nom « " + m.nom + " » apparaît, mais le domaine n'est pas le sien",
-          trouve:"trouvé : " + jeton + "   ·   domaine : " + d.complet,
+          titre:"Le nom « " + m.nom + " » apparaît, mais le domaine n'est pas le sien",
+          trouve:"trouvé : " + jeton + "   ·   domaine : " + d.complet,
           texte:"Les adresses officielles de " + m.nom + " se terminent par " + m.officiels.slice(0,3).join(", ") + ". Ici, le nom est présent quelque part dans l'adresse, mais la destination appartient à " + d.complet + ". Placer une marque connue ailleurs que dans le domaine est la manœuvre la plus fréquente."
         });
         break;
@@ -579,7 +579,7 @@ function observer(p, d){
     obs.push({
       titre:"Extension peu courante",
       trouve:"." + d.ext,
-      texte:"Cette terminaison ne fait pas partie des extensions les plus répandues. La lecture du domaine ci-dessus reste donc à confirmer : selon les pays, la vraie coupure peut se situer un cran plus à gauche."
+      texte:"Cette terminaison ne fait pas partie des extensions les plus répandues. La lecture du domaine ci-dessus reste donc à confirmer : selon les pays, la vraie coupure peut se situer un cran plus à gauche."
     });
   }
 
@@ -611,7 +611,7 @@ function analyser(){
   if(!url){ vider(); return; }
 
   notice.hidden = !nettoye;
-  if(nettoye) notice.textContent = "Adresse extraite du texte collé : " + url;
+  if(nettoye) notice.textContent = "Adresse extraite du texte collé : " + url;
 
   const p = decouper(url);
   if(!p.hote){ vider(); return; }
@@ -628,13 +628,13 @@ function analyser(){
   ask.className = "ask";
   ask.textContent = raccourci
     ? "puis à un site inconnu, que cette adresse ne nomme pas."
-    : "Est-ce bien ce que vous attendiez ?";
+    : "Est-ce bien ce que vous attendiez ?";
   destination.appendChild(ask);
 
   if(!d.connu && !d.ip){
     const c = document.createElement("p");
     c.className = "caveat";
-    c.textContent = "Extension peu courante : la coupure entre le domaine et ce qui précède reste à confirmer.";
+    c.textContent = "Extension peu courante : la coupure entre le domaine et ce qui précède reste à confirmer.";
     destination.appendChild(c);
   }
 
@@ -646,11 +646,11 @@ function analyser(){
   segs.push({t:d.ip ? d.complet : d.nom, l:d.ip ? "adresse numérique" : "nom de domaine", key:true,
     h:d.ip ? "L'adresse numérique" : "Le nom de domaine",
     q:d.ip ? "Une machine désignée par son numéro, sans nom. Rien ne permet de savoir à qui elle appartient." : "Le seul morceau qui engage quelqu'un. Il a été acheté auprès d'un bureau d'enregistrement, il est unique au monde et personne d'autre ne peut l'utiliser.",
-    w:d.ip ? "Aucun propriétaire identifiable à la lecture." : "C'est lui, avec son extension, qui répond à la question : à qui je parle ?"});
-  if(!d.ip && d.ext) segs.push({t:"."+d.ext, l:"extension", key:true, h:"L'extension", q:"La terminaison du domaine. Elle fait partie du nom : paypal.com et paypal.ru sont deux domaines sans aucun rapport, appartenant à deux propriétaires différents.", w:"Attribuée par un registre. Certaines sont très contrôlées (.gouv.fr), la plupart s'achètent librement."});
+    w:d.ip ? "Aucun propriétaire identifiable à la lecture." : "C'est lui, avec son extension, qui répond à la question : à qui je parle ?"});
+  if(!d.ip && d.ext) segs.push({t:"."+d.ext, l:"extension", key:true, h:"L'extension", q:"La terminaison du domaine. Elle fait partie du nom : paypal.com et paypal.ru sont deux domaines sans aucun rapport, appartenant à deux propriétaires différents.", w:"Attribuée par un registre. Certaines sont très contrôlées (.gouv.fr), la plupart s'achètent librement."});
   if(p.port) segs.push({t:":"+p.port, l:"port", h:"Le port", q:"Le numéro de la porte d'entrée sur le serveur. 80 et 443 sont les portes habituelles du web et ne s'écrivent pas.", w:"Choisi par celui qui gère le serveur."});
-  if(p.chemin) segs.push({t:p.chemin, l:"chemin", h:"Le chemin", q:"L'emplacement de la page à l'intérieur du site. C'est du texte libre : on peut y écrire /banque/securite/officiel/ sans que cela signifie quoi que ce soit.", w:"Écrit entièrement par le propriétaire du domaine."});
-  if(p.requete !== null) segs.push({t:"?"+p.requete, l:"paramètres", h:"Les paramètres", q:"Des informations transmises à la page : un numéro de commande, une langue, un identifiant de campagne. Souvent, un code qui permet de savoir que c'est bien vous qui avez cliqué.", w:"Écrits par le propriétaire du domaine."});
+  if(p.chemin) segs.push({t:p.chemin, l:"chemin", h:"Le chemin", q:"L'emplacement de la page à l'intérieur du site. C'est du texte libre : on peut y écrire /banque/securite/officiel/ sans que cela signifie quoi que ce soit.", w:"Écrit entièrement par le propriétaire du domaine."});
+  if(p.requete !== null) segs.push({t:"?"+p.requete, l:"paramètres", h:"Les paramètres", q:"Des informations transmises à la page : un numéro de commande, une langue, un identifiant de campagne. Souvent, un code qui permet de savoir que c'est bien vous qui avez cliqué.", w:"Écrits par le propriétaire du domaine."});
   if(p.ancre !== null) segs.push({t:"#"+p.ancre, l:"ancre", h:"L'ancre", q:"Un repère à l'intérieur de la page, pour arriver directement au bon endroit. Cette partie n'est même pas envoyée au serveur.", w:"Écrite par le propriétaire du domaine."});
 
   strip.innerHTML = "";
@@ -698,7 +698,7 @@ function analyser(){
     li.className = "solo";
     const h = document.createElement("h3"); h.textContent = "Rien de particulier dans la forme de cette adresse";
     const t = document.createElement("p");
-    t.textContent = "Aucun des pièges de construction connus n'a été repéré. Cela ne veut pas dire que le site est honnête : un faux site correctement fabriqué ne laisse aucune trace dans l'adresse. La question reste entière, et c'est vous qui y répondez — attendiez-vous un message de " + d.complet + " ?";
+    t.textContent = "Aucun des pièges de construction connus n'a été repéré. Cela ne veut pas dire que le site est honnête : un faux site correctement fabriqué ne laisse aucune trace dans l'adresse. La question reste entière, et c'est vous qui y répondez — attendiez-vous un message de " + d.complet + " ?";
     li.append(h,t);
     obsListe.appendChild(li);
   }
