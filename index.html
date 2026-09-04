@@ -70,10 +70,23 @@ textarea{
 textarea:focus{outline:2px solid var(--ink);outline-offset:2px}
 textarea::placeholder{color:var(--muted);font-family:'Atkinson Hyperlegible',sans-serif}
 
-.notice{
-  font-size:16px;color:var(--muted);
-  margin:-4px 0 14px;
+.barre{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:14px;min-height:44px;margin:-4px 0 14px;
 }
+.notice{font-size:16px;color:var(--muted);flex:1;min-width:0}
+.effacer{
+  flex:none;
+  font-family:inherit;font-size:16px;
+  padding:10px 16px;
+  background:var(--tint);
+  color:var(--ink);
+  border:1px solid var(--line);
+  border-radius:8px;
+  cursor:pointer;
+}
+.effacer:hover{background:var(--line)}
+.effacer:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
 .examples{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:36px}
 .examples span{font-size:16px;color:var(--muted);align-self:center;margin-right:2px}
 .chip{
@@ -196,7 +209,10 @@ footer p+p{margin-top:6px}
   <textarea id="entree" spellcheck="false" autocapitalize="off" autocorrect="off"
     placeholder="Collez ici le lien reçu. Il ne sera ni ouvert ni envoyé nulle part."></textarea>
 </div>
-<p class="notice" id="notice" hidden></p>
+<div class="barre">
+  <p class="notice" id="notice" hidden></p>
+  <button class="effacer" type="button" id="effacer" hidden>Effacer</button>
+</div>
 
 <div class="examples">
   <span>Exemples :</span>
@@ -572,8 +588,10 @@ const entree = $("entree"), notice = $("notice"), destination = $("destination")
 const destLead = $("destLead"), destHost = $("destHost");
 const blocDec = $("blocDecorticage"), strip = $("strip"), panel = $("panel");
 const blocObs = $("blocObs"), obsListe = $("obs"), obsHint = $("obsHint");
+const effacer = $("effacer");
 
 function vider(){
+  effacer.hidden = entree.value === "";
   destination.className = "destination empty";
   destLead.textContent = "Rien à examiner pour l'instant";
   destHost.textContent = "Collez une adresse ci-dessus.";
@@ -582,6 +600,7 @@ function vider(){
 }
 
 function analyser(){
+  effacer.hidden = entree.value === "";
   const {url, nettoye} = extraire(entree.value);
   if(!url){ vider(); return; }
 
@@ -694,6 +713,12 @@ document.querySelectorAll(".chip").forEach(c => {
     analyser();
     destination.scrollIntoView({behavior:"smooth", block:"nearest"});
   });
+});
+
+effacer.addEventListener("click", () => {
+  entree.value = "";
+  analyser();
+  entree.focus();
 });
 
 if("serviceWorker" in navigator){
