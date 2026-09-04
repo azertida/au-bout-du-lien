@@ -1,8 +1,8 @@
 /* Au bout du lien — service worker
    Incrémenter CACHE à chaque mise en ligne. */
 
-const CACHE = "au-bout-du-lien-v1";
-const POLICES = "au-bout-du-lien-polices-v1";
+const CACHE = "au-bout-du-lien-v2";
+const POLICES = "au-bout-du-lien-polices-v2";
 
 const COQUILLE = [
   "./",
