@@ -81,11 +81,17 @@ textarea::placeholder{color:var(--muted);font-family:'Atkinson Hyperlegible',san
   padding:10px 16px;
   background:var(--tint);
   color:var(--ink);
-  border:1px solid var(--line);
+  border:1px solid var(--muted);
   border-radius:8px;
   cursor:pointer;
 }
-.effacer:hover{background:var(--line)}
+.effacer:not(:disabled):hover{background:var(--line)}
+.effacer:disabled{
+  background:transparent;
+  color:var(--muted);
+  border-color:var(--line);
+  cursor:default;
+}
 .effacer:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
 .examples{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:36px}
 .examples span{font-size:16px;color:var(--muted);align-self:center;margin-right:2px}
@@ -211,7 +217,7 @@ footer p+p{margin-top:6px}
 </div>
 <div class="barre">
   <p class="notice" id="notice" hidden></p>
-  <button class="effacer" type="button" id="effacer" hidden>Effacer</button>
+  <button class="effacer" type="button" id="effacer" disabled>Effacer</button>
 </div>
 
 <div class="examples">
@@ -591,7 +597,7 @@ const blocObs = $("blocObs"), obsListe = $("obs"), obsHint = $("obsHint");
 const effacer = $("effacer");
 
 function vider(){
-  effacer.hidden = entree.value === "";
+  effacer.disabled = entree.value === "";
   destination.className = "destination empty";
   destLead.textContent = "Rien à examiner pour l'instant";
   destHost.textContent = "Collez une adresse ci-dessus.";
@@ -600,7 +606,7 @@ function vider(){
 }
 
 function analyser(){
-  effacer.hidden = entree.value === "";
+  effacer.disabled = entree.value === "";
   const {url, nettoye} = extraire(entree.value);
   if(!url){ vider(); return; }
 
